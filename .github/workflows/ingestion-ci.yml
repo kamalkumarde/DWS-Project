@@ -1,0 +1,23 @@
+name: Ingestion CI
+on:
+  push:
+    paths: ['src/**', 'tests/**']
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest # or self-hosted-openshift
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      
+      - name: Run Pytest
+        run: |
+          pip install -r requirements.txt
+          pytest tests/unit --cov=src
+          
+      - name: Build and Push to Artifactory
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker build -t artifactory.company.com/data-ingestor:${{ github.sha }} .
+          docker push artifactory.company.com/data-ingestor:${{ github.sha }}
