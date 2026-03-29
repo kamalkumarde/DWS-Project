@@ -81,7 +81,7 @@ jobs:
             -backend-config="bucket=dws-tf-state-mar26" \
             -backend-config="prefix=terraform/state/${{ env.DEPLOY_ENV }}"
             
-      -- name: Terraform Plan
+      - name: Terraform Plan
         working-directory: ./terraform
         run: |
           terraform plan \
