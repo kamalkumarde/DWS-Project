@@ -11,9 +11,9 @@ module "storage" {
   project_id  = var.project_id
   bucket_name = "${var.project_id}-ingestion-buffer"
 }
-module "ingestion_bus" {
-  source     = "./modules/pubsub"
-  project_id = var.project_id
-  topic_name = "raw-events-stream"
-  env        = var.env
+module "pubsub_ingestion" {
+  source            = "./modules/pubsub"
+  project_id        = var.project_id
+  topic_name        = "ingestion-topic-${var.env}"
+  subscription_name = "ingestion-sub-${var.env}" # Pass it here!
 }
