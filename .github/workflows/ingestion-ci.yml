@@ -1,28 +1,31 @@
 name: Ingestion CI
 on:
   push:
-    paths: ['src/**', 'tests/**', 'requirements.txt'] # Added requirements.txt to trigger
+    paths: ['src/**', 'tests/**', 'requirements.txt']
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Silences the Node warning
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' # Best practice for faster builds
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov # Ensure test runners are installed
+          # Explicitly install pytest and coverage in case they aren't in requirements.txt
+          pip install pytest pytest-cov 
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Pytest
         run: |
-          # Use 'python -m pytest' to avoid 'command not found' (127) errors
+          # Adding current directory to PYTHONPATH ensures 'src' is importable
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # Using 'python -m pytest' solves the 127 error
           python -m pytest tests/unit --cov=src
