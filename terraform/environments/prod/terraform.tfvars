@@ -1,2 +1,3 @@
+# terraform/environments/prod/terraform.tfvars
 project_id = "dws-project-mar26"
-env        = "dev"
+DEPLOY_ENV = "prod"
