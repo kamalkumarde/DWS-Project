@@ -6,12 +6,12 @@ variable "env" {
 }
 
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id                  = var.dataset_id
-  project                     = var.project_id # <--- ENSURE THIS LINE EXISTS
-  location                    = "US"
-  description                 = "Warehouse for ${var.env} environment"
+  dataset_id  = var.dataset_id
+  project     = var.project_id # <--- ENSURE THIS LINE EXISTS
+  location    = "US"
+  description = "Warehouse for ${var.env} environment"
 
   #  Prevents accidental deletion of data
-  delete_contents_on_destroy = false 
+  delete_contents_on_destroy = false
 }
 
