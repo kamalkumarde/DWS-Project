@@ -1,0 +1,77 @@
+name: 1PB Data Platform CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # --- STAGE 1: Quality Control ---
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest  # Ensure test runner is present
+          
+      - name: Run Unit Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          pytest tests/unit/
+
+  # --- STAGE 2: Infrastructure Check ---
+  terraform-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive terraform/
+
+  # --- STAGE 3: Production Deployment (Only on Main) ---
+  deploy-prod:
+    needs: [test, terraform-check]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Build and Push Ingestor Image
+        run: |
+          gcloud auth configure-docker
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ingestor-worker:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ingestor-worker:${{ github.sha }}
+
+      - name: Terraform Apply
+        run: |
+          cd terraform/environments/prod
+          terraform init
+          terraform apply -auto-approve
+          
+      - name: Post-Deploy Smoke Test
+        run: |
+          # Send 1 valid message to the PROD topic
+          python src/workers/load_tester.py --count 1 --env prod
+          
+          # Wait 30 seconds for the Batcher to flush to GCS
+          sleep 30
+          
+          # Check if a new file exists in the GCS bucket
+          gsutil ls gs://dws-lake-prod/raw/dt=$(date +%Y%m%d)/*.jsonl    

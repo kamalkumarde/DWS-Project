@@ -1,0 +1,3 @@
+def test_placeholder():
+    # A simple test to verify the CI pipeline logic
+    assert 1 + 1 == 2
