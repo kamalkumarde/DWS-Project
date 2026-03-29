@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GCP_PROJECT_ID: "dws-project-mar26"
-      DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+      DEPLOY_ENV: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') || github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
     steps:
       - name: Checkout
