@@ -25,7 +25,14 @@ jobs:
 
       - name: Run Pytest
         run: |
-          # Adding current directory to PYTHONPATH ensures 'src' is importable
+          # Create init files if they don't exist (helps discovery)
+          touch src/__init__.py
+          touch src/core/__init__.py
+          touch tests/__init__.py
+          touch tests/unit/__init__.py
+          
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          # Using 'python -m pytest' solves the 127 error
-          python -m pytest tests/unit --cov=src
+          # Explicitly point to the tests folder
+          python -m pytest tests/unit/ -v --cov=src/core
+          # Generate coverage report in XML format for Codecov
+          python -m pytest tests/unit/ --cov=src/core --cov-report=xml  
