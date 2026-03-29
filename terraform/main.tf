@@ -14,7 +14,7 @@ module "storage" {
 module "pubsub_ingestion" {
   source            = "./modules/pubsub"
   project_id        = var.project_id
-  env               = var.env  # This fixes Error 1
+  env               = var.env # This fixes Error 1
   topic_name        = "ingestion-topic-${var.env}"
   subscription_name = "ingestion-sub-${var.env}" # This fixes Error 2
 }
