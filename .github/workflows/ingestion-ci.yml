@@ -42,6 +42,7 @@ jobs:
           
       - name: Run Pytest
         run: |
+          # Create init files to ensure proper module discovery
           touch src/__init__.py src/core/__init__.py tests/__init__.py tests/unit/__init__.py
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
@@ -50,8 +51,10 @@ jobs:
     needs: test-and-build
     runs-on: ubuntu-latest
     env:
+      # Logical separation: 'prod' for main branch, 'dev' for everything else
       DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-      GCP_PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'dws-project-prod' || 'dws-project-mar26' }}
+      # Consistently using your verified Project ID
+      GCP_PROJECT_ID: 'dws-project-mar26'
 
     steps:
       - name: Checkout
@@ -61,10 +64,9 @@ jobs:
         id: auth
         uses: 'google-github-actions/auth@v2'
         with:
-          # Explicitly using env context to avoid empty string errors
-          workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-terraform@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
           token_format: 'access_token'
+          workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions-terraform@dws-project-mar26.iam.gserviceaccount.com'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -74,18 +76,21 @@ jobs:
       - name: Terraform Init
         working-directory: ./terraform
         run: |
+          # Use DEPLOY_ENV to keep 'dev' and 'prod' state files separate in the same bucket
           terraform init \
-            -backend-config="bucket=dws-tf-state-${{ env.DEPLOY_ENV }}" \
-            -backend-config="prefix=terraform/state"
+            -backend-config="bucket=dws-tf-state-mar26" \
+            -backend-config="prefix=terraform/state/${{ env.DEPLOY_ENV }}"
             
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
           terraform plan \
             -var-file="environments/${{ env.DEPLOY_ENV }}/terraform.tfvars" \
+            -var="project_id=${{ env.GCP_PROJECT_ID }}" \
             -out=tfplan
 
       - name: Terraform Apply
+        # Only deploy to 'prod' if we are pushing/merging to main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./terraform
         run: terraform apply -auto-approve tfplan
