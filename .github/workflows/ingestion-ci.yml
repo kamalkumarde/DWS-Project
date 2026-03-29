@@ -78,9 +78,4 @@ jobs:
         # Only run apply on push to main (deployment)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./terraform
-        run: terraform apply -auto-approve tfplan
-      # Note: We skip apply on PRs to avoid deploying unreviewed code, but you could add a manual approval step here if desired. ss
-
-      # Optional: Add a step to upload the coverage report as an artifact for later analysis
-    
-      
+        run: terraform apply -auto-approve tfplan       
