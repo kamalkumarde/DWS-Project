@@ -6,14 +6,11 @@ variable "env" {
 }
 
 resource "google_bigquery_dataset" "dataset" {
-  project    = var.project_id
-  dataset_id = var.dataset_id
-  location   = "US"
-  lifecycle {
-    prevent_destroy = true
-  }
-  labels = {
-    environment = var.env
-    data_tier   = "warehouse"
-  }
+  dataset_id                  = var.dataset_id
+  project                     = var.project_id # <--- ENSURE THIS LINE EXISTS
+  location                    = "US"
+  description                 = "Warehouse for ${var.env} environment"
+
+  # Important for 1 PB Scale: Prevents accidental deletion of data
+  delete_contents_on_destroy = false 
 }
