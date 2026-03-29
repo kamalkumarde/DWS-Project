@@ -1,14 +1,15 @@
 variable "project_id" {
-  type        = string
-  description = "The GCP Project ID"
+  type = string
 }
 
 variable "topic_name" {
-  type        = string
-  description = "Name of the Pub/Sub topic"
+  type = string
+}
+
+variable "subscription_name" {
+  type = string
 }
 
 variable "env" {
-  type        = string
-  description = "Environment (dev/prod)"
+  type = string
 }
