@@ -9,6 +9,6 @@ variable "region" {
   default     = "us-central1"
 }
 variable "env" {
-  type        = string
-  default     = "dev"
+  type    = string
+  default = "dev"
 }
