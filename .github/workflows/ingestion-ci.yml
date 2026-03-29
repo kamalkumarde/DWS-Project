@@ -1,7 +1,17 @@
-name: Ingestion CI
+name: Ingestion CI/CD
+
 on:
   push:
-    paths: ['src/**', 'tests/**', 'requirements.txt']
+    # Added terraform path so infra changes trigger the workflow
+    paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
+  pull_request:
+    paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
+
+# Required for Workload Identity Federation (Keyless Auth)
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
@@ -19,20 +29,51 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          # Explicitly install pytest and coverage in case they aren't in requirements.txt
           pip install pytest pytest-cov 
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Pytest
         run: |
-          # Create init files if they don't exist (helps discovery)
           touch src/__init__.py
           touch src/core/__init__.py
           touch tests/__init__.py
           touch tests/unit/__init__.py
-          
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          # Explicitly point to the tests folder
-          python -m pytest tests/unit/ -v --cov=src/core
-          # Generate coverage report in XML format for Codecov
-          python -m pytest tests/unit/ --cov=src/core --cov-report=xml  
+          python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
+
+  terraform:
+    # Only run if tests pass! 
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    
+    # Ensure variables match your environment
+    env:
+      TF_VAR_project_id: "dws-project-mar26"
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # Use your specific project number: 1081882450721
+          workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions-terraform@dws-project-mar26.iam.gserviceaccount.com'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ./terraform/environments/dev
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./terraform/environments/dev
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        # Only deploy if we are on the main branch
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: ./terraform/environments/dev
+        run: terraform apply -auto-approve tfplan
