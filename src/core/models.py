@@ -1,21 +1,18 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from datetime import datetime, timezone
-from typing import Generic, TypeVar, Optional, Any
-
-T = TypeVar("T", bound=BaseModel)
+import dateutil.parser # Ensure this is in requirements.txt
 
 class BaseEvent(BaseModel, Generic[T]):
-    model_config = ConfigDict(strict=True, frozen=True)
-    event_id: str = Field(..., min_length=1)
+    model_config = ConfigDict(strict=False, frozen=True) # Change strict to False
+    event_id: str
     event_type: str = Field(..., alias="type")
     producer_id: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime # Pydantic V2 will try to parse strings here
     payload: T
 
-class SensorPayload(BaseModel):
-    sensor_id: str
-    temperature: float = Field(..., ge=-50, le=150)
-    humidity: float = Field(..., ge=0, le=100)
-
-class SensorEvent(BaseEvent[SensorPayload]):
-    pass
+    @field_validator('timestamp', mode='before')
+    @classmethod
+    def parse_timestamp(cls, v):
+        if isinstance(v, str):
+            return datetime.fromisoformat(v.replace('Z', '+00:00'))
+        return v
