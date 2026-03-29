@@ -11,6 +11,7 @@ resource "google_bigquery_dataset" "dataset" {
   location                    = "US"
   description                 = "Warehouse for ${var.env} environment"
 
-  # Important for 1 PB Scale: Prevents accidental deletion of data
+  #  Prevents accidental deletion of data
   delete_contents_on_destroy = false 
 }
+
