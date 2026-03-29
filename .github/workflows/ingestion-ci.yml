@@ -41,15 +41,14 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
 
+
   terraform:
-    # Only run if tests pass! 
-    needs: test-and-build
     runs-on: ubuntu-latest
-    
-    # Ensure variables match your environment
+    # Map branches to environments
     env:
-      TF_VAR_project_id: "dws-project-mar26"
-    
+      DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+      PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'dws-project-prod' || 'dws-project-mar26' }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,23 +56,20 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2'
         with:
-          # Use your specific project number: 1081882450721
+          # Use different providers/SAs for Prod if needed
           workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions-terraform@dws-project-mar26.iam.gserviceaccount.com'
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+          service_account: 'github-actions-terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
       - name: Terraform Init
-        working-directory: ./terraform/environments/dev
-        run: terraform init
+        working-directory: ./terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=dws-tf-state-${{ env.DEPLOY_ENV }}" \
+            -backend-config="prefix=terraform/state"
 
       - name: Terraform Plan
-        working-directory: ./terraform/environments/dev
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        # Only deploy if we are on the main branch
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        working-directory: ./terraform/environments/dev
-        run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform
+        run: |
+          terraform plan \
+            -var-file="environments/${{ env.DEPLOY_ENV }}/terraform.tfvars" \
+            -out=tfplan
