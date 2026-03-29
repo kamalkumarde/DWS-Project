@@ -2,12 +2,10 @@ name: Ingestion CI/CD
 
 on:
   push:
-    # Added terraform path so infra changes trigger the workflow
     paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
   pull_request:
     paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
 
-# Required for Workload Identity Federation (Keyless Auth)
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -19,19 +17,16 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov 
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
       - name: Run Pytest
         run: |
           touch src/__init__.py
@@ -41,12 +36,12 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
 
-
   terraform:
+    needs: test-and-build # Ensures we don't deploy broken code
     runs-on: ubuntu-latest
-    # Map branches to environments
     env:
       DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+      # Note: Ensure these project IDs actually exist in your GCP console
       PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'dws-project-prod' || 'dws-project-mar26' }}
 
     steps:
@@ -56,9 +51,14 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2'
         with:
-          # Use different providers/SAs for Prod if needed
           workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions-terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      # --- THE MISSING PIECE ---
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
 
       - name: Terraform Init
         working-directory: ./terraform
@@ -73,3 +73,9 @@ jobs:
           terraform plan \
             -var-file="environments/${{ env.DEPLOY_ENV }}/terraform.tfvars" \
             -out=tfplan
+
+      - name: Terraform Apply
+        # Only run apply on push to main (deployment)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
