@@ -1,10 +1,20 @@
 name: Ingestion CI/CD
 
 on:
+  workflow_dispatch:
   push:
-    paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - 'terraform/**'
+      - '.github/workflows/**'
   pull_request:
-    paths: ['src/**', 'tests/**', 'requirements.txt', 'terraform/**']
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'requirements.txt'
+      - 'terraform/**'
 
 permissions:
   contents: 'read'
@@ -37,11 +47,10 @@ jobs:
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
 
   terraform:
-    needs: test-and-build # Ensures we don't deploy broken code
+    needs: test-and-build
     runs-on: ubuntu-latest
     env:
       DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-      # Note: Ensure these project IDs actually exist in your GCP console
       PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'dws-project-prod' || 'dws-project-mar26' }}
 
     steps:
@@ -54,7 +63,6 @@ jobs:
           workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions-terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
-      # --- THE MISSING PIECE ---
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -75,7 +83,6 @@ jobs:
             -out=tfplan
 
       - name: Terraform Apply
-        # Only run apply on push to main (deployment)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./terraform
-        run: terraform apply -auto-approve tfplan       
+        run: terraform apply -auto-approve tfplan
