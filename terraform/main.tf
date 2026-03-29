@@ -14,7 +14,7 @@ module "storage" {
 module "pubsub_ingestion" {
   source            = "./modules/pubsub"
   project_id        = var.project_id
-  env               = var.env # This fixes Error 1
-  topic_name        = "ingestion-topic-${var.env}"
-  subscription_name = "ingestion-sub-${var.env}" # This fixes Error 2
+  env               = var.DEPLOY_ENV # Or var.env, matching your root variables.tf
+  topic_name        = "ingestion-topic-${var.DEPLOY_ENV}"
+  subscription_name = "ingestion-sub-${var.DEPLOY_ENV}"
 }
