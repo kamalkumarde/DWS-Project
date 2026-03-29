@@ -25,15 +25,13 @@ permissions:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Matches your stable dev environment
+          python-version: '3.11'
           cache: 'pip'
           
       - name: Install Dependencies
@@ -44,8 +42,6 @@ jobs:
           
       - name: Run Pytest
         run: |
-          # Ensure Python treats directories as packages for imports
-          find . -name "__init__.py" -delete # Clean old ones
           touch src/__init__.py src/core/__init__.py tests/__init__.py tests/unit/__init__.py
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
@@ -53,7 +49,6 @@ jobs:
   terraform:
     needs: test-and-build
     runs-on: ubuntu-latest
-    # Explicitly set the variables here
     env:
       DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
       GCP_PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'dws-project-prod' || 'dws-project-mar26' }}
@@ -66,14 +61,31 @@ jobs:
         id: auth
         uses: 'google-github-actions/auth@v2'
         with:
-          # Use the exact full string for the provider
+          # Explicitly using env context to avoid empty string errors
           workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          # Use the environment variable we just set
           service_account: 'github-actions-terraform@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+          token_format: 'access_token'
 
-      # Add a diagnostic step to confirm auth worked before Terraform starts
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
 
-      - name: 'Verify Auth'
-        run: gcloud auth list
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=dws-tf-state-${{ env.DEPLOY_ENV }}" \
+            -backend-config="prefix=terraform/state"
+            
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: |
+          terraform plan \
+            -var-file="environments/${{ env.DEPLOY_ENV }}/terraform.tfvars" \
+            -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
