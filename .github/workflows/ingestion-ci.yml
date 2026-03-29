@@ -81,7 +81,7 @@ jobs:
           terraform plan \
             -var-file="environments/${{ env.DEPLOY_ENV }}/terraform.tfvars" \
             -var="project_id=${{ env.GCP_PROJECT_ID }}" \
-            -var="deploy_env=${{ env.DEPLOY_ENV }}" \
+            -var="DEPLOY_ENV=${{ env.DEPLOY_ENV }}" \
             -out=tfplan
 
       - name: Terraform Apply
