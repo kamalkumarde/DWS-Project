@@ -44,30 +44,32 @@ jobs:
         run: |
           export PYTHONPATH="$(pwd):${PYTHONPATH}"
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
-
-  terraform:
+          
+    terraform:
     needs: test-and-build
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
     env:
-      GCP_PROJECT_ID: "dws-project-mar26"
-      DEPLOY_ENV: ${{ (github.event_name == 'pull_request' && github.base_ref == 'main') || github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+      GCP_PROJECT_ID: 'dws-project-mar26'
+      DEPLOY_ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Authenticate to Google Cloud
         id: auth
-        uses: google-github-actions/auth@v3   # ← Update to latest v3 (recommended in 2026)
+        uses: google-github-actions/auth@v3
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
           workload_identity_provider: 'projects/1081882450721/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions-terraform@dws-project-mar26.iam.gserviceaccount.com'
-          token_format: 'access_token'        # Optional but good for Terraform
-      
+          token_format: 'access_token'
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.7.0"
+          terraform_version: '1.7.0'
 
       - name: Terraform Init
         working-directory: ./terraform
@@ -85,10 +87,11 @@ jobs:
             -var="DEPLOY_ENV=${{ env.DEPLOY_ENV }}" \
             -out=tfplan
 
+      - name: Show Plan
+        working-directory: ./terraform
+        run: terraform show -no-color tfplan
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./terraform
         run: terraform apply -auto-approve tfplan
-
-        # Optional: Add a step to clean up the plan file after apply
-      
