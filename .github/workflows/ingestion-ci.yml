@@ -48,8 +48,8 @@ jobs:
   terraform:
     needs: test-and-build
     runs-on: ubuntu-latest
-    
-    # Skip on external fork PRs to avoid auth issues
+
+    # Skip terraform job on external fork PRs (prevents this exact auth error)
     if: >
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository
@@ -91,9 +91,7 @@ jobs:
             -var="project_id=${{ env.GCP_PROJECT_ID }}" \
             -var="DEPLOY_ENV=${{ env.DEPLOY_ENV }}" \
             -out=tfplan
-      - name: Show Terraform Plan
-        working-directory: ./terraform
-        run: terraform show -no-color tfplan
+
       - name: Show Terraform Plan
         working-directory: ./terraform
         run: terraform show -no-color tfplan
