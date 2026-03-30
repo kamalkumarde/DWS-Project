@@ -1,7 +1,64 @@
-venv/
+# === Python & Programming ===
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 .env
+.venv
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# === Terraform (Crucial for Security) ===
+# Local .terraform folder containing binaries
 .terraform/
+
+# State files (may contain secrets in plain text)
 *.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Terraform variables (where you might put secrets locally)
+
+
+# Override files
+override.tf
+override.tf.json
+_override.tf
+_override.tf.json
+
+# === dbt (Data Build Tool) ===
+# Local logs and compiled SQL
+target/
+dbt_modules/
+dbt_packages/
+logs/
+
+# Sensitive connection profiles (if kept in project root)
+profiles.yml
+
+# === OS & IDE ===
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Container & Infrastructure ===
+# If you use local secrets for OpenShift testing
+.secrets/
+*.pem
+*.key
+**/.terraform/*
+*.tfstate
+*.tfstate.*
 *.tfplan
+.terraform.lock.hcl
+.DS_Store
+__MACOSX/
