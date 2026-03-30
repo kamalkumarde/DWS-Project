@@ -8,9 +8,9 @@ module "warehouse" {
 module "storage" {
   source      = "./modules/storage"
   project_id  = var.project_id
-  bucket_name = "${var.project_id}-ingestion-buffer-${var.DEPLOY_ENV}" # ← Add env suffix
+  bucket_name = "${var.project_id}-ingestion-buffer-${var.DEPLOY_ENV}"
+  deploy_env  = var.DEPLOY_ENV        # ← Pass it here
 }
-
 module "pubsub_ingestion" {
   source            = "./modules/pubsub"
   project_id        = var.project_id
