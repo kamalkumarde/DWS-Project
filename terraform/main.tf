@@ -1,14 +1,14 @@
 module "warehouse" {
   source     = "./modules/bigquery"
   project_id = var.project_id
-  dataset_id = "dws_${var.DEPLOY_ENV}_warehouse"   # ← Make it dynamic
+  dataset_id = "dws_${var.DEPLOY_ENV}_warehouse" # ← Make it dynamic
   env        = var.DEPLOY_ENV
 }
 
 module "storage" {
   source      = "./modules/storage"
   project_id  = var.project_id
-  bucket_name = "${var.project_id}-ingestion-buffer-${var.DEPLOY_ENV}"   # ← Add env suffix
+  bucket_name = "${var.project_id}-ingestion-buffer-${var.DEPLOY_ENV}" # ← Add env suffix
 }
 
 module "pubsub_ingestion" {
