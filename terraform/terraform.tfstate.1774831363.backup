@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.5.7",
-  "serial": 46,
+  "serial": 44,
   "lineage": "3a0e5cd0-7e81-7277-d1e0-93d30ab06454",
   "outputs": {},
   "resources": [
@@ -102,7 +102,7 @@
             },
             "enable_object_retention": false,
             "encryption": [],
-            "force_destroy": false,
+            "force_destroy": true,
             "hierarchical_namespace": [
               {
                 "enabled": false
@@ -110,7 +110,7 @@
             ],
             "id": "dws-project-mar26-ingestion-buffer-prod",
             "ip_filter": [],
-            "labels": {},
+            "labels": null,
             "lifecycle_rule": [
               {
                 "action": [
@@ -170,7 +170,7 @@
             "location": "US",
             "logging": [],
             "name": "dws-project-mar26-ingestion-buffer-prod",
-            "project": "",
+            "project": "dws-project-mar26",
             "project_number": 1081882450721,
             "public_access_prevention": "inherited",
             "requester_pays": false,
@@ -184,7 +184,9 @@
               }
             ],
             "storage_class": "STANDARD",
-            "terraform_labels": {},
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
             "time_created": "2026-03-30T00:18:04.774Z",
             "timeouts": null,
             "uniform_bucket_level_access": false,

@@ -91,7 +91,9 @@ jobs:
             -var="project_id=${{ env.GCP_PROJECT_ID }}" \
             -var="DEPLOY_ENV=${{ env.DEPLOY_ENV }}" \
             -out=tfplan
-
+      - name: Show Terraform Plan
+        working-directory: ./terraform
+        run: terraform show -no-color tfplan
       - name: Show Terraform Plan
         working-directory: ./terraform
         run: terraform show -no-color tfplan
