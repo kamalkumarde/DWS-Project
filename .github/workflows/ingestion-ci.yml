@@ -89,3 +89,6 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         working-directory: ./terraform
         run: terraform apply -auto-approve tfplan
+
+        # Optional: Add a step to clean up the plan file after apply
+      
