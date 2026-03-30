@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.5.7",
-  "serial": 32,
+  "serial": 28,
   "lineage": "3a0e5cd0-7e81-7277-d1e0-93d30ab06454",
   "outputs": {},
   "resources": [
@@ -102,15 +102,15 @@
             },
             "enable_object_retention": false,
             "encryption": [],
-            "force_destroy": false,
+            "force_destroy": true,
             "hierarchical_namespace": [
               {
                 "enabled": false
               }
             ],
-            "id": "dws-project-mar26-ingestion-buffer-prod",
+            "id": "dws-project-mar26-ingestion-buffer-dev",
             "ip_filter": [],
-            "labels": {},
+            "labels": null,
             "lifecycle_rule": [
               {
                 "action": [
@@ -169,27 +169,29 @@
             ],
             "location": "US",
             "logging": [],
-            "name": "dws-project-mar26-ingestion-buffer-prod",
-            "project": "",
+            "name": "dws-project-mar26-ingestion-buffer-dev",
+            "project": "dws-project-mar26",
             "project_number": 1081882450721,
             "public_access_prevention": "inherited",
             "requester_pays": false,
             "retention_policy": [],
             "rpo": "DEFAULT",
-            "self_link": "https://www.googleapis.com/storage/v1/b/dws-project-mar26-ingestion-buffer-prod",
+            "self_link": "https://www.googleapis.com/storage/v1/b/dws-project-mar26-ingestion-buffer-dev",
             "soft_delete_policy": [
               {
-                "effective_time": "2026-03-30T00:10:37.845Z",
+                "effective_time": "2026-03-30T00:05:23.397Z",
                 "retention_duration_seconds": 604800
               }
             ],
             "storage_class": "STANDARD",
-            "terraform_labels": {},
-            "time_created": "2026-03-30T00:10:37.845Z",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "time_created": "2026-03-30T00:05:23.397Z",
             "timeouts": null,
             "uniform_bucket_level_access": false,
-            "updated": "2026-03-30T00:10:37.845Z",
-            "url": "gs://dws-project-mar26-ingestion-buffer-prod",
+            "updated": "2026-03-30T00:05:23.397Z",
+            "url": "gs://dws-project-mar26-ingestion-buffer-dev",
             "versioning": [],
             "website": []
           },

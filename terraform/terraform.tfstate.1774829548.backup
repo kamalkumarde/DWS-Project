@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.5.7",
-  "serial": 32,
+  "serial": 18,
   "lineage": "3a0e5cd0-7e81-7277-d1e0-93d30ab06454",
   "outputs": {},
   "resources": [
@@ -20,7 +20,7 @@
             "cloud_storage_config": [],
             "dead_letter_policy": [],
             "effective_labels": {
-              "env": "prod",
+              "env": "dev",
               "goog-terraform-provisioned": "true"
             },
             "enable_exactly_once_delivery": false,
@@ -31,22 +31,30 @@
               }
             ],
             "filter": "",
-            "id": "projects/dws-project-mar26/subscriptions/ingestion-sub-prod",
-            "labels": {},
+            "id": "projects/dws-project-mar26/subscriptions/ingestion-sub-dev",
+            "labels": {
+              "env": "dev"
+            },
             "message_retention_duration": "600s",
             "message_transforms": [],
-            "name": "ingestion-sub-prod",
+            "name": "ingestion-sub-dev",
             "project": "dws-project-mar26",
             "push_config": [],
             "retain_acked_messages": false,
             "retry_policy": [],
             "tags": null,
-            "terraform_labels": {},
+            "terraform_labels": {
+              "env": "dev",
+              "goog-terraform-provisioned": "true"
+            },
             "timeouts": null,
-            "topic": "projects/dws-project-mar26/topics/ingestion-topic-prod"
+            "topic": "projects/dws-project-mar26/topics/ingestion-topic-dev"
           },
           "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "module.pubsub_ingestion.google_pubsub_topic.name"
+          ]
         }
       ]
     },
@@ -61,25 +69,30 @@
           "schema_version": 0,
           "attributes": {
             "effective_labels": {
-              "env": "prod",
+              "env": "dev",
               "goog-terraform-provisioned": "true"
             },
-            "id": "projects/dws-project-mar26/topics/ingestion-topic-prod",
+            "id": "projects/dws-project-mar26/topics/ingestion-topic-dev",
             "ingestion_data_source_settings": [],
             "kms_key_name": "",
-            "labels": {},
+            "labels": {
+              "env": "dev"
+            },
             "message_retention_duration": "",
             "message_storage_policy": [],
             "message_transforms": [],
-            "name": "ingestion-topic-prod",
+            "name": "ingestion-topic-dev",
             "project": "dws-project-mar26",
             "schema_settings": [],
             "tags": null,
-            "terraform_labels": {},
+            "terraform_labels": {
+              "env": "dev",
+              "goog-terraform-provisioned": "true"
+            },
             "timeouts": null
           },
           "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
         }
       ]
     },
@@ -102,15 +115,15 @@
             },
             "enable_object_retention": false,
             "encryption": [],
-            "force_destroy": false,
+            "force_destroy": true,
             "hierarchical_namespace": [
               {
                 "enabled": false
               }
             ],
-            "id": "dws-project-mar26-ingestion-buffer-prod",
+            "id": "dws-project-mar26-ingestion-buffer-dev",
             "ip_filter": [],
-            "labels": {},
+            "labels": null,
             "lifecycle_rule": [
               {
                 "action": [
@@ -169,27 +182,29 @@
             ],
             "location": "US",
             "logging": [],
-            "name": "dws-project-mar26-ingestion-buffer-prod",
-            "project": "",
+            "name": "dws-project-mar26-ingestion-buffer-dev",
+            "project": "dws-project-mar26",
             "project_number": 1081882450721,
             "public_access_prevention": "inherited",
             "requester_pays": false,
             "retention_policy": [],
             "rpo": "DEFAULT",
-            "self_link": "https://www.googleapis.com/storage/v1/b/dws-project-mar26-ingestion-buffer-prod",
+            "self_link": "https://www.googleapis.com/storage/v1/b/dws-project-mar26-ingestion-buffer-dev",
             "soft_delete_policy": [
               {
-                "effective_time": "2026-03-30T00:10:37.845Z",
+                "effective_time": "2026-03-30T00:05:23.397Z",
                 "retention_duration_seconds": 604800
               }
             ],
             "storage_class": "STANDARD",
-            "terraform_labels": {},
-            "time_created": "2026-03-30T00:10:37.845Z",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "time_created": "2026-03-30T00:05:23.397Z",
             "timeouts": null,
             "uniform_bucket_level_access": false,
-            "updated": "2026-03-30T00:10:37.845Z",
-            "url": "gs://dws-project-mar26-ingestion-buffer-prod",
+            "updated": "2026-03-30T00:05:23.397Z",
+            "url": "gs://dws-project-mar26-ingestion-buffer-dev",
             "versioning": [],
             "website": []
           },
@@ -258,36 +273,38 @@
                 "view": []
               }
             ],
-            "creation_time": 1774829437563,
-            "dataset_id": "dws_prod_warehouse",
+            "creation_time": 1774826914559,
+            "dataset_id": "dws_dev_warehouse",
             "default_collation": "",
             "default_encryption_configuration": [],
             "default_partition_expiration_ms": 0,
             "default_table_expiration_ms": 0,
             "delete_contents_on_destroy": false,
-            "description": "Warehouse for prod environment",
+            "description": "Warehouse for dev environment",
             "effective_labels": {
               "goog-terraform-provisioned": "true"
             },
-            "etag": "LgGYp+VxC132ookMuC4eww==",
+            "etag": "fm0gHUv7Sg/if+Rr7X95lQ==",
             "external_catalog_dataset_options": [],
             "external_dataset_reference": [],
             "friendly_name": "",
-            "id": "projects/dws-project-mar26/datasets/dws_prod_warehouse",
+            "id": "projects/dws-project-mar26/datasets/dws_dev_warehouse",
             "is_case_insensitive": false,
             "labels": {},
-            "last_modified_time": 1774829437563,
+            "last_modified_time": 1774829013515,
             "location": "US",
             "max_time_travel_hours": "168",
             "project": "dws-project-mar26",
             "resource_tags": {},
-            "self_link": "https://bigquery.googleapis.com/bigquery/v2/projects/dws-project-mar26/datasets/dws_prod_warehouse",
+            "self_link": "https://bigquery.googleapis.com/bigquery/v2/projects/dws-project-mar26/datasets/dws_dev_warehouse",
             "storage_billing_model": "",
-            "terraform_labels": {},
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
             "timeouts": null
           },
           "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
         }
       ]
     }
