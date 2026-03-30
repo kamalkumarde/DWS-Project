@@ -9,7 +9,7 @@ module "storage" {
   source      = "./modules/storage"
   project_id  = var.project_id
   bucket_name = "${var.project_id}-ingestion-buffer-${var.DEPLOY_ENV}"
-  env  = var.DEPLOY_ENV # ← Pass it here
+  env         = var.DEPLOY_ENV # ← Pass it here
 }
 module "pubsub_ingestion" {
   source            = "./modules/pubsub"
