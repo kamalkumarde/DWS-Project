@@ -36,3 +36,4 @@ module "pubsub_ingestion" {
   topic_name        = "ingestion-topic-${var.DEPLOY_ENV}"
   subscription_name = "ingestion-sub-${var.DEPLOY_ENV}"
 }
+# Add more modules as needed, following the same pattern
