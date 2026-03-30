@@ -82,6 +82,13 @@ jobs:
           terraform init \
             -backend-config="bucket=dws-tf-state-mar26" \
             -backend-config="prefix=terraform/state/${{ env.DEPLOY_ENV }}"
+    
+      - name: Debug Terraform State
+        working-directory: ./terraform
+        run: |
+          terraform version
+          terraform providers
+          terraform state list || true
 
       - name: Terraform Plan
         working-directory: ./terraform
