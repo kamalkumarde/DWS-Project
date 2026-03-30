@@ -1,0 +1,103 @@
+{
+  "version": 4,
+  "terraform_version": "1.5.7",
+  "serial": 5,
+  "lineage": "3a0e5cd0-7e81-7277-d1e0-93d30ab06454",
+  "outputs": {},
+  "resources": [
+    {
+      "module": "module.warehouse",
+      "mode": "managed",
+      "type": "google_bigquery_dataset",
+      "name": "dataset",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "access": [
+              {
+                "condition": [],
+                "dataset": [],
+                "domain": "",
+                "group_by_email": "",
+                "iam_member": "",
+                "role": "OWNER",
+                "routine": [],
+                "special_group": "",
+                "user_by_email": "github-actions-terraform@dws-project-mar26.iam.gserviceaccount.com",
+                "view": []
+              },
+              {
+                "condition": [],
+                "dataset": [],
+                "domain": "",
+                "group_by_email": "",
+                "iam_member": "",
+                "role": "OWNER",
+                "routine": [],
+                "special_group": "projectOwners",
+                "user_by_email": "",
+                "view": []
+              },
+              {
+                "condition": [],
+                "dataset": [],
+                "domain": "",
+                "group_by_email": "",
+                "iam_member": "",
+                "role": "READER",
+                "routine": [],
+                "special_group": "projectReaders",
+                "user_by_email": "",
+                "view": []
+              },
+              {
+                "condition": [],
+                "dataset": [],
+                "domain": "",
+                "group_by_email": "",
+                "iam_member": "",
+                "role": "WRITER",
+                "routine": [],
+                "special_group": "projectWriters",
+                "user_by_email": "",
+                "view": []
+              }
+            ],
+            "creation_time": 1774826914559,
+            "dataset_id": "dws_dev_warehouse",
+            "default_collation": "",
+            "default_encryption_configuration": [],
+            "default_partition_expiration_ms": 0,
+            "default_table_expiration_ms": 0,
+            "delete_contents_on_destroy": false,
+            "description": "Warehouse for dev environment",
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "etag": "7PQ4Cf0AzCbYsv6fl6iV9A==",
+            "external_catalog_dataset_options": [],
+            "external_dataset_reference": [],
+            "friendly_name": "",
+            "id": "projects/dws-project-mar26/datasets/dws_dev_warehouse",
+            "is_case_insensitive": false,
+            "labels": {},
+            "last_modified_time": 1774826914559,
+            "location": "US",
+            "max_time_travel_hours": "168",
+            "project": "dws-project-mar26",
+            "resource_tags": {},
+            "self_link": "https://bigquery.googleapis.com/bigquery/v2/projects/dws-project-mar26/datasets/dws_dev_warehouse",
+            "storage_billing_model": "",
+            "terraform_labels": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
