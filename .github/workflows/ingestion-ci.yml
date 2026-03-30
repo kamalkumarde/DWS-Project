@@ -45,7 +45,7 @@ jobs:
           export PYTHONPATH="$(pwd):${PYTHONPATH}"
           python -m pytest tests/unit/ -v --cov=src/core --cov-report=xml
 
-     terraform:
+  terraform:
     needs: test-and-build
     runs-on: ubuntu-latest
     
